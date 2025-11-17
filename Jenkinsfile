@@ -1,35 +1,34 @@
 pipeline {
 
-    agent any   // run on your local Jenkins agent
+    agent any
 
     environment {
-        // Add your Vercel token here (or set it from Jenkins > Credentials)
+        // Load Vercel token stored in Jenkins Credentials
         VERCEL_TOKEN = credentials('vercel-token')
-        // If you want to use a normal env variable instead:
-        // VERCEL_TOKEN = "${env.VERCEL_TOKEN}"
     }
 
     stages {
 
         stage('Install Dependencies') {
             steps {
-                bat 'npm install'
+                echo 'Installing npm dependencies...'
+                sh 'npm install'
             }
         }
 
         stage('Build') {
             steps {
-                bat 'npm run build'
+                echo 'Building the React project...'
+                sh 'npm run build'
             }
         }
 
         stage('Deploy') {
             steps {
-                bat """
-                    npx vercel --prod --yes ^
-                    --token=%VERCEL_TOKEN%
-                """
+                echo 'Deploying to Vercel...'
+                sh "npx vercel --prod --yes --token $VERCEL_TOKEN"
             }
         }
     }
-} 
+}
+
